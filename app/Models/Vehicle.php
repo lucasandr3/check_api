@@ -5,12 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
+use App\Traits\BelongsToCompany;
 
 class Vehicle extends Model
 {
-    use HasFactory, BelongsToTenant;
+    use HasFactory, BelongsToTenant, BelongsToCompany;
 
     protected $fillable = [
+        'tenant_id',
+        'company_id',
+        'client_id',
         'brand',
         'model',
         'year',
@@ -38,11 +42,11 @@ class Vehicle extends Model
     }
 
     /**
-     * Get the office that owns the vehicle.
+     * Get the company that owns the vehicle.
      */
-    public function office()
+    public function company()
     {
-        return $this->belongsTo(Office::class);
+        return $this->belongsTo(Company::class, 'company_id');
     }
 
     /**

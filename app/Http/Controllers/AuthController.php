@@ -49,17 +49,21 @@ class AuthController extends Controller
      *                     @OA\Property(property="id", type="integer", example=1),
      *                     @OA\Property(property="name", type="string", example="João Silva"),
      *                     @OA\Property(property="email", type="string", example="user@example.com"),
-     *                     @OA\Property(property="tenant_id", type="string", example="793ae398-9d4a-4b70-a9a0-220dc8dbc2cc"),
-     *                     @OA\Property(property="office_id", type="integer", example=1)
+     *                     @OA\Property(property="tenant_id", type="string", example="1000"),
+     *                     @OA\Property(property="company_id", type="integer", example=1)
      *                 ),
-     *                 @OA\Property(property="office", type="object", nullable=true,
+     *                 @OA\Property(property="tenant", type="object", nullable=true,
+     *                     @OA\Property(property="id", type="string", example="1000"),
+     *                     @OA\Property(property="name", type="string", example="Empresa ABC"),
+     *                     @OA\Property(property="schema", type="string", example="tenant_1000")
+     *                 ),
+     *                 @OA\Property(property="companies", type="array", @OA\Items(
      *                     @OA\Property(property="id", type="integer", example=1),
-     *                     @OA\Property(property="name", type="string", example="Oficina Central"),
-     *                     @OA\Property(property="email", type="string", example="contato@oficinacentral.com"),
+     *                     @OA\Property(property="name", type="string", example="Empresa Principal"),
      *                     @OA\Property(property="cnpj", type="string", example="12.345.678/0001-90"),
-     *                     @OA\Property(property="phone", type="string", example="(11) 99999-9999"),
-     *                     @OA\Property(property="address", type="string", example="Rua das Oficinas, 123")
-     *                 ),
+     *                     @OA\Property(property="email", type="string", example="contato@empresa.com"),
+     *                     @OA\Property(property="phone", type="string", example="(11) 99999-9999")
+     *                 )),
      *                 @OA\Property(property="permissions", type="object"),
      *                 @OA\Property(property="menus", type="array", @OA\Items(
      *                     @OA\Property(property="secao", type="string", example="PRINCIPAL"),
@@ -82,17 +86,26 @@ class AuthController extends Controller
     {
         $credentials = $request->only('email', 'password');
 
-        if (!$token = Auth::guard('api')->attempt($credentials)) {
+        if (!Auth::attempt($credentials)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Credenciais inválidas'
             ], 401);
         }
 
-        $user = Auth::guard('api')->user();
+        $user = Auth::user();
+        
+        // Criar token Sanctum
+        $token = $user->createToken('auth-token')->plainTextToken;
         
         // Obter tenant atual do middleware
         $currentTenant = \App\Models\Tenant::current();
+        
+        // Obter empresas do tenant
+        $companies = \App\Models\Company::where('tenant_id', $currentTenant->id)
+            ->select('id', 'name', 'cnpj', 'email', 'phone')
+            ->orderBy('name')
+            ->get();
         
         return response()->json([
             'success' => true,
@@ -100,17 +113,19 @@ class AuthController extends Controller
             'data' => [
                 'access_token' => $token,
                 'token_type' => 'bearer',
-                'expires_in' => JWTAuth::factory()->getTTL() * 60,
                 'user' => [
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
+                    'tenant_id' => $user->tenant_id,
+                    'company_id' => $user->company_id,
                 ],
                 'tenant' => $currentTenant ? [
                     'id' => $currentTenant->id,
                     'name' => $currentTenant->name,
                     'schema' => $currentTenant->schema_name,
                 ] : null,
+                'companies' => $companies,
                 'permissions' => new UIPermissionResource($this->getUIPermissions($user)),
                 'menus' => new MenuGroupedResource($user->getAccessibleMenus())
             ]
@@ -162,10 +177,19 @@ class AuthController extends Controller
      */
     public function me(): JsonResponse
     {
-        $user = Auth::guard('api')->user();
+        $user = Auth::user();
         
-        // Carregar os dados da oficina
-        $user->load('office');
+        // Carregar os dados da empresa
+        $user->load('company');
+        
+        // Obter tenant atual
+        $currentTenant = \App\Models\Tenant::current();
+        
+        // Obter empresas do tenant
+        $companies = \App\Models\Company::where('tenant_id', $currentTenant->id)
+            ->select('id', 'name', 'cnpj', 'email', 'phone')
+            ->orderBy('name')
+            ->get();
 
         return response()->json([
             'success' => true,
@@ -174,15 +198,16 @@ class AuthController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'tenant_id' => $user->tenant_id,
-                'office_id' => $user->office_id,
-                'office' => $user->office ? [
-                    'id' => $user->office->id,
-                    'name' => $user->office->name,
-                    'email' => $user->office->email,
-                    'cnpj' => $user->office->cnpj,
-                    'phone' => $user->office->phone,
-                    'address' => $user->office->address
+                'company_id' => $user->company_id,
+                'company' => $user->company ? [
+                    'id' => $user->company->id,
+                    'name' => $user->company->name,
+                    'email' => $user->company->email,
+                    'cnpj' => $user->company->cnpj,
+                    'phone' => $user->company->phone,
+                    'address' => $user->company->address
                 ] : null,
+                'companies' => $companies,
                 'permissions' => new UIPermissionResource($this->getUIPermissions($user)),
                 'menus' => new MenuGroupedResource($user->getAccessibleMenus())
             ]

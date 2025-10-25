@@ -8,10 +8,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use App\Traits\BelongsToCompany;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, BelongsToCompany;
 
     /**
      * The attributes that are mass assignable.
@@ -22,6 +23,9 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
+        'tenant_id',
+        'company_id',
+        'role',
     ];
 
     /**
@@ -61,11 +65,11 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Get the office that the user belongs to.
+     * Get the company that the user belongs to.
      */
-    public function office()
+    public function company()
     {
-        return $this->belongsTo(Office::class);
+        return $this->belongsTo(Company::class, 'company_id');
     }
 
     /**

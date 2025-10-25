@@ -414,5 +414,7 @@ php artisan tenant:create 1000 "Empresa ABC" --run-migrations
 php artisan tenant:create 1001 "Empresa XYZ" --run-migrations
 php artisan db:seed --class=TenantAclSeeder
 php artisan db:seed --class=TenantUserSeeder
+php artisan tenant:migrate 1000
+php artisan tenant:seed 1000 --class=CompanySeeder
 
 **Desenvolvido com ❤️ pela equipe FixCar**
