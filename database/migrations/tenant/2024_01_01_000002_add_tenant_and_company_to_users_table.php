@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('tenant_id')->nullable(); // Usando string para compatibilidade com tenancy
-            $table->unsignedBigInteger('office_id')->nullable();
+            $table->unsignedBigInteger('company_id')->nullable();
             $table->string('role')->default('user');
 
             $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
-            $table->foreign('office_id')->references('id')->on('offices')->onDelete('cascade');
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
         });
     }
 
@@ -28,8 +28,8 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropForeign(['tenant_id']);
-            $table->dropForeign(['office_id']);
-            $table->dropColumn(['tenant_id', 'office_id', 'role']);
+            $table->dropForeign(['company_id']);
+            $table->dropColumn(['tenant_id', 'company_id', 'role']);
         });
     }
 };

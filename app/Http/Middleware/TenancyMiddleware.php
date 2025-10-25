@@ -25,7 +25,7 @@ class TenancyMiddleware
         $publicRoutes = [
             '/',
             '/test',
-            '/auth/login',
+            '/api/auth/login',  // ← Corrigido: incluir o prefixo /api
             '/up'
         ];
 
@@ -46,20 +46,7 @@ class TenancyMiddleware
             }
         }
 
-        // 2. Tentar identificar por domínio (opcional - para compatibilidade)
-        $host = $request->getHost();
-        $tenant = TenantDomain::findTenantByDomain($host);
-        if (!$tenant) {
-            $tenant = TenantDomain::findTenantBySubdomain($host);
-        }
-        
-        if ($tenant && $tenant->status === 'active') {
-            $tenant->makeCurrent();
-            Log::info("Tenant inicializado por domínio: {$tenant->id} ({$host})");
-            return $next($request);
-        }
-
-        // 3. Tentar identificar pelo usuário autenticado
+        // 2. Tentar identificar pelo usuário autenticado (PRIORIDADE)
         if (auth()->check()) {
             $tenantId = auth()->user()->tenant_id ?? null;
             if ($tenantId) {
@@ -74,6 +61,19 @@ class TenancyMiddleware
             } else {
                 Log::warning("Usuário autenticado sem tenant_id: " . auth()->user()->email);
             }
+        }
+
+        // 3. Tentar identificar por domínio (opcional - para compatibilidade)
+        $host = $request->getHost();
+        $tenant = TenantDomain::findTenantByDomain($host);
+        if (!$tenant) {
+            $tenant = TenantDomain::findTenantBySubdomain($host);
+        }
+        
+        if ($tenant && $tenant->status === 'active') {
+            $tenant->makeCurrent();
+            Log::info("Tenant inicializado por domínio: {$tenant->id} ({$host})");
+            return $next($request);
         }
 
         // Se chegou aqui e não é rota pública, retornar erro

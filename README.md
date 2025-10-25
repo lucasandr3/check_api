@@ -407,14 +407,47 @@ Para suporte e dúvidas:
 - **Documentação**: [docs.fixcar.com](https://docs.fixcar.com)
 - **Issues**: [GitHub Issues](https://github.com/fixcar/api/issues)
 
----
+## 🚀 Setup Rápido
 
-php artisan migrate
-php artisan tenant:create 1000 "Empresa ABC" --run-migrations
-php artisan tenant:create 1001 "Empresa XYZ" --run-migrations
-php artisan db:seed --class=TenantAclSeeder
-php artisan db:seed --class=TenantUserSeeder
-php artisan tenant:migrate 1000
-php artisan tenant:seed 1000 --class=CompanySeeder
+Para configurar o projeto completo em ambiente local:
+
+```bash
+# Reset completo (se houver problemas)
+php artisan reset:project
+
+# OU setup normal
+php artisan setup:project
+```
+
+Este comando cria:
+- ✅ Tenants (1000 e 1001)
+- ✅ Empresas para cada tenant
+- ✅ Usuários com tenant_id e company_id corretos
+- ✅ Permissões e roles
+- ✅ Dados de teste
+
+### 🔑 Credenciais de Login
+
+Após o setup, você terá:
+
+**Tenant 1000 (Empresa ABC):**
+- `admin@tenant1000.com` / `password` (Admin)
+- `operador@tenant1000.com` / `password` (Operador)
+- `gerente@tenant1000.com` / `password` (Gerente)
+
+**Tenant 1001 (Empresa XYZ):**
+- `admin@tenant1001.com` / `password` (Admin)
+- `operador@tenant1001.com` / `password` (Operador)
+- `gerente@tenant1001.com` / `password` (Gerente)
+
+### 🧪 Teste de Login
+
+```bash
+curl -X POST http://localhost:8000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@tenant1000.com","password":"password"}'
+```
+
+---
 
 **Desenvolvido com ❤️ pela equipe FixCar**

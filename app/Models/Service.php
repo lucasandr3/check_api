@@ -10,7 +10,7 @@ class Service extends Model
     use HasFactory;
 
     protected $fillable = [
-        'office_id',
+        'company_id',
         'vehicle_id',
         'type',
         'description',
@@ -43,7 +43,7 @@ class Service extends Model
      */
     public function office()
     {
-        return $this->belongsTo(Office::class);
+        return $this->belongsTo(Company::class);
     }
 
     /**

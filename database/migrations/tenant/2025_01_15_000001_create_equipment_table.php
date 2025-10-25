@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('equipment', function (Blueprint $table) {
             $table->id();
             $table->string('tenant_id');
-            $table->unsignedBigInteger('office_id');
+            $table->unsignedBigInteger('company_id');
             $table->unsignedBigInteger('client_id');
             $table->string('name');
             $table->string('type'); // 'generator', 'compressor', 'crane', etc.
@@ -26,10 +26,10 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
-            $table->foreign('office_id')->references('id')->on('offices')->onDelete('cascade');
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
             $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
             
-            $table->index(['tenant_id', 'office_id']);
+            $table->index(['tenant_id', 'company_id']);
             $table->index(['client_id', 'status']);
         });
     }

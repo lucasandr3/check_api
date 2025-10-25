@@ -109,6 +109,7 @@ class UserTestSeeder extends Seeder
                 'name' => $userData['name'],
                 'email' => $userData['email'],
                 'password' => Hash::make($userData['password']),
+                'tenant_id' => $tenantId,
                 'email_verified_at' => now(),
             ]);
 

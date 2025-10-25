@@ -36,7 +36,7 @@ class ChecklistTemplate extends Model
      */
     public function office()
     {
-        return $this->belongsTo(Office::class);
+        return $this->belongsTo(Company::class);
     }
 
     /**

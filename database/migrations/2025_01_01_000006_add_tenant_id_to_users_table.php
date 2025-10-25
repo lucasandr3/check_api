@@ -10,6 +10,8 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('tenant_id')->nullable()->after('email');
+            $table->unsignedBigInteger('company_id')->nullable()->after('tenant_id');
+            $table->string('role')->default('user')->after('company_id');
             
             $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('set null');
             $table->index(['tenant_id']);
@@ -21,7 +23,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->dropForeign(['tenant_id']);
             $table->dropIndex(['tenant_id']);
-            $table->dropColumn(['tenant_id']);
+            $table->dropColumn(['tenant_id', 'company_id', 'role']);
         });
     }
 };

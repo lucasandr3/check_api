@@ -22,9 +22,8 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\TenancyMiddleware::class,
         ]);
         
-        $middleware->api([
-            \App\Http\Middleware\TenancyMiddleware::class,
-        ]);
+        // Não aplicar middleware de tenancy globalmente
+        // Será aplicado apenas às rotas que precisam
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

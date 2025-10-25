@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('maintenance_schedules', function (Blueprint $table) {
             $table->id();
             $table->string('tenant_id');
-            $table->unsignedBigInteger('office_id');
+            $table->unsignedBigInteger('company_id');
             $table->morphs('maintainable'); // vehicle_id or equipment_id
             $table->enum('type', ['preventive', 'corrective'])->default('preventive');
             $table->string('name');
@@ -29,9 +29,9 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
-            $table->foreign('office_id')->references('id')->on('offices')->onDelete('cascade');
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
             
-            $table->index(['tenant_id', 'office_id']);
+            $table->index(['tenant_id', 'company_id']);
             $table->index(['next_due_date', 'is_active']);
             $table->index(['priority', 'is_active']);
         });

@@ -11,19 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('clients', function (Blueprint $table) {
+        // Criar tabela companies diretamente
+        Schema::create('companies', function (Blueprint $table) {
             $table->id();
             $table->string('tenant_id'); // Usando string para compatibilidade com tenancy
-            $table->unsignedBigInteger('company_id');
             $table->string('name');
-            $table->string('email')->nullable();
-            $table->string('phone');
-            $table->string('cpf_cnpj')->nullable();
             $table->text('address')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('email')->nullable();
+            $table->string('cnpj')->nullable();
             $table->timestamps();
 
             $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
-            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
         });
     }
 
@@ -32,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('clients');
+        Schema::dropIfExists('companies');
     }
 };

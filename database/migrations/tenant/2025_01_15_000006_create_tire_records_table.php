@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('tire_records', function (Blueprint $table) {
             $table->id();
             $table->string('tenant_id');
-            $table->unsignedBigInteger('office_id');
+            $table->unsignedBigInteger('company_id');
             $table->unsignedBigInteger('vehicle_id');
             $table->enum('tire_position', ['front_left', 'front_right', 'rear_left', 'rear_right', 'spare']);
             $table->string('tire_brand');
@@ -31,10 +31,10 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
-            $table->foreign('office_id')->references('id')->on('offices')->onDelete('cascade');
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
             $table->foreign('vehicle_id')->references('id')->on('vehicles')->onDelete('cascade');
             
-            $table->index(['tenant_id', 'office_id']);
+            $table->index(['tenant_id', 'company_id']);
             $table->index(['vehicle_id', 'tire_position', 'status']);
             $table->index(['installation_date', 'status']);
         });

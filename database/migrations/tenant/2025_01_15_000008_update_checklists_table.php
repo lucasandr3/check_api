@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::table('checklists', function (Blueprint $table) {
             // Add new columns
-            $table->unsignedBigInteger('template_id')->nullable()->after('office_id');
+            $table->unsignedBigInteger('template_id')->nullable()->after('company_id');
             $table->string('checklistable_type')->nullable()->after('template_id');
             $table->unsignedBigInteger('checklistable_id')->nullable()->after('checklistable_type');
             $table->enum('type', ['preventive', 'routine', 'corrective'])->default('routine')->after('checklistable_id');

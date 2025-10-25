@@ -95,14 +95,30 @@ class AuthController extends Controller
 
         $user = Auth::user();
         
+        // Verificar se o usuário tem tenant_id
+        if (!$user->tenant_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Usuário não está associado a nenhum tenant'
+            ], 400);
+        }
+        
+        // Ativar o tenant do usuário
+        $tenant = \App\Models\Tenant::find($user->tenant_id);
+        if (!$tenant || $tenant->status !== 'active') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tenant não encontrado ou inativo'
+            ], 400);
+        }
+        
+        $tenant->makeCurrent();
+        
         // Criar token Sanctum
         $token = $user->createToken('auth-token')->plainTextToken;
         
-        // Obter tenant atual do middleware
-        $currentTenant = \App\Models\Tenant::current();
-        
         // Obter empresas do tenant
-        $companies = \App\Models\Company::where('tenant_id', $currentTenant->id)
+        $companies = \App\Models\Company::where('tenant_id', $tenant->id)
             ->select('id', 'name', 'cnpj', 'email', 'phone')
             ->orderBy('name')
             ->get();
@@ -120,11 +136,11 @@ class AuthController extends Controller
                     'tenant_id' => $user->tenant_id,
                     'company_id' => $user->company_id,
                 ],
-                'tenant' => $currentTenant ? [
-                    'id' => $currentTenant->id,
-                    'name' => $currentTenant->name,
-                    'schema' => $currentTenant->schema_name,
-                ] : null,
+                'tenant' => [
+                    'id' => $tenant->id,
+                    'name' => $tenant->name,
+                    'schema' => $tenant->schema_name,
+                ],
                 'companies' => $companies,
                 'permissions' => new UIPermissionResource($this->getUIPermissions($user)),
                 'menus' => new MenuGroupedResource($user->getAccessibleMenus())

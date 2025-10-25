@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('checklist_templates', function (Blueprint $table) {
             $table->id();
             $table->string('tenant_id');
-            $table->unsignedBigInteger('office_id');
+            $table->unsignedBigInteger('company_id');
             $table->string('name');
             $table->enum('type', ['preventive', 'routine', 'corrective'])->default('routine');
             $table->enum('category', ['vehicle', 'equipment'])->default('vehicle');
@@ -21,9 +21,9 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
-            $table->foreign('office_id')->references('id')->on('offices')->onDelete('cascade');
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
             
-            $table->index(['tenant_id', 'office_id']);
+            $table->index(['tenant_id', 'company_id']);
             $table->index(['type', 'category', 'is_active']);
         });
     }

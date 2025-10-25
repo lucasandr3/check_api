@@ -27,12 +27,14 @@ class TenantUserSeeder extends Seeder
                     'name' => 'Admin ' . $tenant->data['name'],
                     'email' => 'admin@tenant' . $tenant->id . '.com',
                     'password' => Hash::make('password'),
+                    'tenant_id' => $tenant->id,
                     'role' => 'admin'
                 ],
                 [
                     'name' => 'Operador ' . $tenant->data['name'],
                     'email' => 'operador@tenant' . $tenant->id . '.com',
                     'password' => Hash::make('password'),
+                    'tenant_id' => $tenant->id,
                     'role' => 'operator'
                 ]
             ];

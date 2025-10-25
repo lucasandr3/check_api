@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('maintenance_records', function (Blueprint $table) {
             $table->id();
             $table->string('tenant_id');
-            $table->unsignedBigInteger('office_id');
+            $table->unsignedBigInteger('company_id');
             $table->morphs('maintainable'); // vehicle_id or equipment_id
             $table->unsignedBigInteger('schedule_id')->nullable(); // Reference to maintenance schedule
             $table->enum('type', ['preventive', 'corrective', 'routine'])->default('preventive');
@@ -28,11 +28,11 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
-            $table->foreign('office_id')->references('id')->on('offices')->onDelete('cascade');
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
             $table->foreign('schedule_id')->references('id')->on('maintenance_schedules')->onDelete('set null');
             $table->foreign('performed_by')->references('id')->on('users')->onDelete('restrict');
             
-            $table->index(['tenant_id', 'office_id']);
+            $table->index(['tenant_id', 'company_id']);
             $table->index(['performed_at', 'type']);
             $table->index(['status', 'performed_at']);
         });
