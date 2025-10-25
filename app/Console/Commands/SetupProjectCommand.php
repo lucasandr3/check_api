@@ -9,6 +9,8 @@ use App\Models\Company;
 use App\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Database\Seeders\TenantAclSeeder;
+use Database\Seeders\TestDataSeeder;
 
 class SetupProjectCommand extends Command
 {
@@ -43,8 +45,15 @@ class SetupProjectCommand extends Command
         // 3. Executar migrations dos tenants
         $this->runTenantMigrations();
         
-        // 4. Criar dados para cada tenant
+        // 4. Executar ACL uma vez no schema público
+        $this->call(TenantAclSeeder::class);
+        
+        // 5. Criar dados para cada tenant
         $this->createTenantData();
+        
+        // 6. Criar dados de teste (veículos, equipamentos, etc.)
+        $this->info('📊 Criando dados de teste...');
+        $this->call(TestDataSeeder::class);
         
         $this->info('✅ Setup completo finalizado!');
         $this->showCredentials();

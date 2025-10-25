@@ -10,6 +10,8 @@ class Equipment extends Model
     use HasFactory;
 
     protected $fillable = [
+        'tenant_id',
+        'company_id',
         'name',
         'type',
         'brand',

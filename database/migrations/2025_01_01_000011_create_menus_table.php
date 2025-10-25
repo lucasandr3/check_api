@@ -10,15 +10,17 @@ return new class extends Migration
     {
         Schema::create('menus', function (Blueprint $table) {
             $table->id();
-            $table->integer('order');
-            $table->string('secao');
+            $table->integer('order')->default(0);
+            $table->string('secao')->nullable();
             $table->string('label');
-            $table->string('icone');
-            $table->string('url');
+            $table->string('icone')->nullable();
+            $table->string('url')->nullable();
             $table->string('identificador')->unique();
-            $table->string('rotas_ativas');
-            $table->foreignId('parent_id')->nullable()->constrained('menus')->onDelete('cascade');
+            $table->string('rotas_ativas')->nullable();
+            $table->unsignedBigInteger('parent_id')->nullable();
             $table->timestamps();
+            
+            $table->foreign('parent_id')->references('id')->on('menus')->onDelete('cascade');
         });
     }
 

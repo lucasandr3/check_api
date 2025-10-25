@@ -12,24 +12,12 @@ class TenantAclSeeder extends Seeder
 {
     public function run(): void
     {
-        // Buscar todos os tenants ativos
-        $tenants = Tenant::where('status', 'active')->get();
+        // Executar ACL apenas uma vez no schema público
+        // (não precisa ser executado para cada tenant)
+        $this->call(AclSeeder::class);
         
-        foreach ($tenants as $tenant) {
-            $this->command->info("📋 Executando ACL para tenant: {$tenant->data['name']} ({$tenant->id})");
-            
-            // Ativar o tenant
-            $tenant->makeCurrent();
-            
-            // Executar o ACLSeeder para este tenant
-            $this->call(AclSeeder::class);
-            
-            // Resetar tenant
-            Tenant::forgetCurrent();
-            
-            $this->command->info("✅ ACL executado para tenant {$tenant->id}");
+        if ($this->command) {
+            $this->command->info("🎉 ACL executado no schema público!");
         }
-        
-        $this->command->info("🎉 ACL executado para todos os tenants!");
     }
 }

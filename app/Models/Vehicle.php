@@ -4,12 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 use App\Traits\BelongsToCompany;
 
 class Vehicle extends Model
 {
-    use HasFactory, BelongsToTenant, BelongsToCompany;
+    use HasFactory, BelongsToCompany;
 
     protected $fillable = [
         'tenant_id',

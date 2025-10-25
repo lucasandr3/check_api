@@ -10,8 +10,11 @@ class MaintenanceRecord extends Model
     use HasFactory;
 
     protected $fillable = [
+        'tenant_id',
+        'company_id',
         'maintainable_type',
         'maintainable_id',
+        'schedule_id',
         'type', // 'preventive', 'corrective', 'routine'
         'description',
         'parts_used',

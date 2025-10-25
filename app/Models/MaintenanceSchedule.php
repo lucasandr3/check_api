@@ -10,6 +10,8 @@ class MaintenanceSchedule extends Model
     use HasFactory;
 
     protected $fillable = [
+        'tenant_id',
+        'company_id',
         'maintainable_type',
         'maintainable_id',
         'type', // 'preventive', 'corrective'

@@ -10,6 +10,8 @@ class TireRecord extends Model
     use HasFactory;
 
     protected $fillable = [
+        'tenant_id',
+        'company_id',
         'vehicle_id',
         'tire_position', // 'front_left', 'front_right', 'rear_left', 'rear_right', 'spare'
         'tire_brand',
