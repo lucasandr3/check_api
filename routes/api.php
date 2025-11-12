@@ -8,12 +8,13 @@ use App\Http\Controllers\ChecklistTemplateController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EquipmentController;
 use App\Http\Controllers\TireController;
+use App\Http\Controllers\VehicleController;
 
 // Incluir rotas do ACL
 require __DIR__.'/acl.php';
 
 // Rota para verificar permissões específicas
-Route::middleware('auth:api')->get('/auth/permissions/check', [App\Http\Controllers\AuthController::class, 'checkPermissions']);
+Route::middleware('auth:sanctum')->get('/auth/permissions/check', [App\Http\Controllers\AuthController::class, 'checkPermissions']);
 
 /*
 |--------------------------------------------------------------------------
@@ -30,7 +31,7 @@ Route::middleware('auth:api')->get('/auth/permissions/check', [App\Http\Controll
 Route::post('/auth/login', [AuthController::class, 'login']);
 
 // Rotas protegidas por autenticação (com tenant automático)
-Route::middleware(['auth:api', 'tenancy'])->group(function () {
+Route::middleware(['auth:sanctum', 'tenancy'])->group(function () {
     
     // Autenticação
     Route::post('/auth/logout', [AuthController::class, 'logout']);
@@ -45,6 +46,9 @@ Route::middleware(['auth:api', 'tenancy'])->group(function () {
     // === TEMPLATES DE CHECKLIST ===
     Route::apiResource('checklist-templates', ChecklistTemplateController::class)->middleware('permission:checklist_templates.manage');
     Route::post('/checklist-templates/{id}/duplicate', [ChecklistTemplateController::class, 'duplicate'])->middleware('permission:checklist_templates.create');
+    
+    // === VEÍCULOS ===
+    Route::apiResource('vehicles', VehicleController::class)->middleware('permission:vehicles.manage');
     
     // === EQUIPAMENTOS ===
     Route::apiResource('equipment', EquipmentController::class)->middleware('permission:equipment.manage');
@@ -63,7 +67,7 @@ Route::middleware(['auth:api', 'tenancy'])->group(function () {
 
 // === ROTAS COM TENANT ESPECÍFICO (COMPATIBILIDADE) ===
 // Padrão: /api/tenant/{account_id}/...
-Route::prefix('tenant/{account_id}')->middleware(['auth:api', 'tenancy'])->group(function () {
+Route::prefix('tenant/{account_id}')->middleware(['auth:sanctum', 'tenancy'])->group(function () {
     
     // === CORE: CHECKLISTS ===
     Route::apiResource('checklists', ChecklistController::class)->middleware('permission:checklists.manage')->names('tenant.checklists');
@@ -73,6 +77,9 @@ Route::prefix('tenant/{account_id}')->middleware(['auth:api', 'tenancy'])->group
     // === TEMPLATES DE CHECKLIST ===
     Route::apiResource('checklist-templates', ChecklistTemplateController::class)->middleware('permission:checklist_templates.manage')->names('tenant.checklist-templates');
     Route::post('/checklist-templates/{id}/duplicate', [ChecklistTemplateController::class, 'duplicate'])->middleware('permission:checklist_templates.create')->name('tenant.checklist-templates.duplicate');
+    
+    // === VEÍCULOS ===
+    Route::apiResource('vehicles', VehicleController::class)->middleware('permission:vehicles.manage')->names('tenant.vehicles');
     
     // === EQUIPAMENTOS ===
     Route::apiResource('equipment', EquipmentController::class)->middleware('permission:equipment.manage')->names('tenant.equipment');

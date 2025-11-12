@@ -19,7 +19,7 @@ class CompanyController extends Controller
                 $query->where('name', 'like', "%{$search}%")
                       ->orWhere('cnpj', 'like', "%{$search}%");
             })
-            ->orderBy('name')
+            ->orderBy('id', 'desc')
             ->paginate($request->per_page ?? 15);
 
         return response()->json($companies);

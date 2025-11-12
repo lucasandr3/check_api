@@ -48,7 +48,7 @@ class ChecklistController extends Controller
     public function index(): JsonResponse
     {
         $checklists = Checklist::with(['user', 'office', 'photos'])
-            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
             ->paginate(10);
 
         return response()->json(new PaginatedResource($checklists, ChecklistResource::class));

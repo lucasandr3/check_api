@@ -44,7 +44,7 @@ class OfficeController extends Controller
     public function index(): JsonResponse
     {
         $offices = Office::with(['tenant'])
-            ->orderBy('name')
+            ->orderBy('id', 'desc')
             ->paginate(10);
 
         return new PaginatedResource($offices, OfficeResource::class);

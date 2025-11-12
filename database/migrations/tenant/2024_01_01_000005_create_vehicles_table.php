@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('tenant_id'); // Usando string para compatibilidade com tenancy
             $table->unsignedBigInteger('company_id');
-            $table->unsignedBigInteger('client_id');
+            $table->unsignedBigInteger('client_id')->nullable(); // Nullable - veículo pode ser da empresa ou de um cliente
             $table->string('brand');
             $table->string('model');
             $table->integer('year');
@@ -27,7 +27,7 @@ return new class extends Migration
 
             $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
             $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
-            $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
+            $table->foreign('client_id')->references('id')->on('clients')->onDelete('set null');
         });
     }
 

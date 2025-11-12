@@ -46,6 +46,13 @@ class TireController extends Controller
      *         required=false,
      *         @OA\Schema(type="string", enum={"front_left", "front_right", "rear_left", "rear_right", "spare"})
      *     ),
+     *     @OA\Parameter(
+     *         name="category",
+     *         in="query",
+     *         description="Filtrar por categoria do veículo",
+     *         required=false,
+     *         @OA\Schema(type="string", enum={"car", "truck", "motorcycle", "van"})
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="Lista de registros de pneus retornada com sucesso"
@@ -56,8 +63,8 @@ class TireController extends Controller
     {
         $user = auth()->user();
         
-        $query = TireRecord::where('office_id', $user->office_id)
-            ->with(['vehicle:id,brand,model,plate']);
+        $query = TireRecord::where('company_id', $user->company_id)
+            ->with(['vehicle:id,brand,model,plate,category']);
 
         // Aplicar filtros
         if ($request->filled('vehicle_id')) {
@@ -72,7 +79,15 @@ class TireController extends Controller
             $query->where('tire_position', $request->position);
         }
 
-        $tires = $query->orderBy('installation_date', 'desc')->paginate(15);
+        // Filtrar por categoria do veículo
+        if ($request->filled('category')) {
+            $query->whereHas('vehicle', function ($q) use ($request) {
+                $q->where('category', $request->category);
+            });
+        }
+
+        $perPage = min($request->get('per_page', 15), 100);
+        $tires = $query->orderBy('id', 'desc')->paginate($perPage);
 
         return response()->json([
             'success' => true,
@@ -120,29 +135,46 @@ class TireController extends Controller
     {
         $user = auth()->user();
 
-        $validated = $request->validate([
+        // Aceitar ambos os formatos: com prefixo tire_ ou sem prefixo
+        $data = $request->all();
+        
+        // Mapear nomes alternativos para os nomes do banco
+        if (isset($data['position']) && !isset($data['tire_position'])) {
+            $data['tire_position'] = $data['position'];
+        }
+        if (isset($data['brand']) && !isset($data['tire_brand'])) {
+            $data['tire_brand'] = $data['brand'];
+        }
+        if (isset($data['model']) && !isset($data['tire_model'])) {
+            $data['tire_model'] = $data['model'];
+        }
+        if (isset($data['size']) && !isset($data['tire_size'])) {
+            $data['tire_size'] = $data['size'];
+        }
+
+        $validated = validator($data, [
             'vehicle_id' => 'required|exists:vehicles,id',
             'tire_position' => 'required|in:front_left,front_right,rear_left,rear_right,spare',
             'tire_brand' => 'required|string|max:100',
             'tire_model' => 'required|string|max:100',
             'tire_size' => 'required|string|max:50',
             'installation_date' => 'required|date',
-            'installation_km' => 'required|integer|min:0',
-            'tread_depth_new' => 'required|numeric|min:0|max:20',
-            'cost' => 'required|numeric|min:0',
+            'installation_km' => 'nullable|integer|min:0',
+            'tread_depth_new' => 'nullable|numeric|min:0|max:20',
+            'cost' => 'nullable|numeric|min:0',
             'warranty_km' => 'nullable|integer|min:0',
             'observations' => 'nullable|string|max:1000',
-        ]);
+        ])->validate();
 
-        // Verificar se o veículo pertence à mesma oficina
+        // Verificar se o veículo pertence à mesma empresa
         $vehicle = Vehicle::where('id', $validated['vehicle_id'])
-            ->where('office_id', $user->office_id)
+            ->where('company_id', $user->company_id)
             ->first();
 
         if (!$vehicle) {
             return response()->json([
                 'success' => false,
-                'message' => 'Veículo não encontrado ou não pertence à sua oficina'
+                'message' => 'Veículo não encontrado ou não pertence à sua empresa'
             ], 404);
         }
 
@@ -159,10 +191,25 @@ class TireController extends Controller
             ], 422);
         }
 
-        $validated['office_id'] = $user->office_id;
-        $validated['status'] = 'active';
+        // Preparar dados para criação
+        $tireData = [
+            'vehicle_id' => $validated['vehicle_id'],
+            'tire_position' => $validated['tire_position'],
+            'tire_brand' => $validated['tire_brand'],
+            'tire_model' => $validated['tire_model'],
+            'tire_size' => $validated['tire_size'],
+            'installation_date' => $validated['installation_date'],
+            'installation_km' => $validated['installation_km'] ?? $vehicle->current_km ?? 0,
+            'tread_depth_new' => $validated['tread_depth_new'] ?? null,
+            'cost' => $validated['cost'] ?? null,
+            'warranty_km' => $validated['warranty_km'] ?? null,
+            'observations' => $validated['observations'] ?? null,
+            'company_id' => $user->company_id,
+            'tenant_id' => $user->tenant_id,
+            'status' => 'active',
+        ];
 
-        $tire = TireRecord::create($validated);
+        $tire = TireRecord::create($tireData);
 
         return response()->json([
             'success' => true,
@@ -194,7 +241,7 @@ class TireController extends Controller
     {
         $user = auth()->user();
 
-        $tire = TireRecord::where('office_id', $user->office_id)
+        $tire = TireRecord::where('company_id', $user->company_id)
             ->with(['vehicle'])
             ->find($id);
 
@@ -234,7 +281,7 @@ class TireController extends Controller
     {
         $user = auth()->user();
 
-        $tire = TireRecord::where('office_id', $user->office_id)->find($id);
+        $tire = TireRecord::where('company_id', $user->company_id)->find($id);
 
         if (!$tire) {
             return response()->json([
@@ -299,7 +346,7 @@ class TireController extends Controller
     {
         $user = auth()->user();
 
-        $tire = TireRecord::where('office_id', $user->office_id)
+        $tire = TireRecord::where('company_id', $user->company_id)
             ->where('status', 'active')
             ->find($id);
 
@@ -357,9 +404,9 @@ class TireController extends Controller
     {
         $user = auth()->user();
 
-        // Verificar se o veículo pertence à oficina do usuário
+        // Verificar se o veículo pertence à empresa do usuário
         $vehicle = Vehicle::where('id', $vehicleId)
-            ->where('office_id', $user->office_id)
+            ->where('company_id', $user->company_id)
             ->first();
 
         if (!$vehicle) {
@@ -390,20 +437,45 @@ class TireController extends Controller
      *     description="Retorna relatório de desgaste dos pneus ativos",
      *     tags={"Tires"},
      *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="vehicle_id",
+     *         in="query",
+     *         description="Filtrar por veículo",
+     *         required=false,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="tire_id",
+     *         in="query",
+     *         description="Filtrar por pneu específico",
+     *         required=false,
+     *         @OA\Schema(type="integer")
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="Relatório de desgaste retornado com sucesso"
      *     )
      * )
      */
-    public function wearReport(): JsonResponse
+    public function wearReport(Request $request): JsonResponse
     {
         $user = auth()->user();
 
-        $activeTires = TireRecord::where('office_id', $user->office_id)
+        $query = TireRecord::where('company_id', $user->company_id)
             ->where('status', 'active')
-            ->with(['vehicle:id,brand,model,plate'])
-            ->get();
+            ->with(['vehicle:id,brand,model,plate']);
+
+        // Filtrar por veículo se fornecido
+        if ($request->filled('vehicle_id')) {
+            $query->where('vehicle_id', $request->vehicle_id);
+        }
+
+        // Filtrar por pneu específico se fornecido
+        if ($request->filled('tire_id')) {
+            $query->where('id', $request->tire_id);
+        }
+
+        $activeTires = $query->get();
 
         $report = $activeTires->map(function ($tire) {
             $usageKm = $tire->usage_km;
@@ -456,7 +528,7 @@ class TireController extends Controller
     {
         $user = auth()->user();
 
-        $tire = TireRecord::where('office_id', $user->office_id)->find($id);
+        $tire = TireRecord::where('company_id', $user->company_id)->find($id);
 
         if (!$tire) {
             return response()->json([

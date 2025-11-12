@@ -61,8 +61,8 @@ class EquipmentController extends Controller
     {
         $user = auth()->user();
         
-        $query = Equipment::where('office_id', $user->office_id)
-            ->with(['client:id,name', 'office:id,name']);
+        $query = Equipment::where('company_id', $user->company_id)
+            ->with(['client:id,name', 'company:id,name']);
 
         // Aplicar filtros
         if ($request->filled('search')) {
@@ -84,7 +84,7 @@ class EquipmentController extends Controller
         }
 
         $perPage = min($request->get('per_page', 15), 100);
-        $equipment = $query->orderBy('name')->paginate($perPage);
+        $equipment = $query->orderBy('id', 'desc')->paginate($perPage);
 
         return response()->json([
             'success' => true,
@@ -103,7 +103,7 @@ class EquipmentController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"name", "type", "brand", "model", "client_id"},
+     *             required={"name", "type", "brand", "model"},
      *             @OA\Property(property="name", type="string", example="Gerador Diesel 100kVA"),
      *             @OA\Property(property="type", type="string", example="generator"),
      *             @OA\Property(property="brand", type="string", example="Caterpillar"),
@@ -137,7 +137,7 @@ class EquipmentController extends Controller
                 'brand' => 'required|string|max:100',
                 'model' => 'required|string|max:100',
                 'serial_number' => 'nullable|string|max:100|unique:equipment,serial_number',
-                'client_id' => 'required|exists:clients,id',
+                'client_id' => 'nullable|exists:clients,id',
                 'acquisition_date' => 'nullable|date',
                 'warranty_expiration' => 'nullable|date|after:acquisition_date',
                 'location' => 'nullable|string|max:255',
@@ -151,19 +151,21 @@ class EquipmentController extends Controller
                 brand: $validated['brand'],
                 model: $validated['model'],
                 serialNumber: $validated['serial_number'] ?? null,
-                clientId: $validated['client_id'],
+                clientId: $validated['client_id'] ?? null,
                 acquisitionDate: $validated['acquisition_date'] ?? null,
                 warrantyExpiration: $validated['warranty_expiration'] ?? null,
                 location: $validated['location'] ?? null,
                 observations: $validated['observations'] ?? null,
-                officeId: $user->office_id
+                companyId: $user->company_id
             );
 
-            $equipment = DB::transaction(function () use ($equipmentData) {
-                return Equipment::create($equipmentData->toArray());
+            $equipment = DB::transaction(function () use ($equipmentData, $user) {
+                $data = $equipmentData->toArray();
+                $data['tenant_id'] = $user->tenant_id;
+                return Equipment::create($data);
             });
 
-            $equipment->load(['client:id,name', 'office:id,name']);
+            $equipment->load(['client:id,name', 'company:id,name']);
 
             return response()->json([
                 'success' => true,
@@ -214,10 +216,10 @@ class EquipmentController extends Controller
     {
         $user = auth()->user();
         
-        $equipment = Equipment::where('office_id', $user->office_id)
+        $equipment = Equipment::where('company_id', $user->company_id)
             ->with([
                 'client:id,name,email',
-                'office:id,name',
+                'company:id,name',
                 'checklists' => function ($query) {
                     $query->latest()->limit(5);
                 },
@@ -280,7 +282,7 @@ class EquipmentController extends Controller
         try {
             $user = auth()->user();
             
-            $equipment = Equipment::where('office_id', $user->office_id)->find($id);
+            $equipment = Equipment::where('company_id', $user->company_id)->find($id);
 
             if (!$equipment) {
                 return response()->json([
@@ -295,7 +297,7 @@ class EquipmentController extends Controller
                 'brand' => 'sometimes|required|string|max:100',
                 'model' => 'sometimes|required|string|max:100',
                 'serial_number' => 'nullable|string|max:100|unique:equipment,serial_number,' . $id,
-                'client_id' => 'sometimes|required|exists:clients,id',
+                'client_id' => 'nullable|exists:clients,id',
                 'acquisition_date' => 'nullable|date',
                 'warranty_expiration' => 'nullable|date|after:acquisition_date',
                 'status' => 'sometimes|required|in:active,maintenance,inactive,repair',
@@ -307,7 +309,7 @@ class EquipmentController extends Controller
                 $equipment->update($validated);
             });
 
-            $equipment->load(['client:id,name', 'office:id,name']);
+            $equipment->load(['client:id,name', 'company:id,name']);
 
             return response()->json([
                 'success' => true,
@@ -359,7 +361,7 @@ class EquipmentController extends Controller
         try {
             $user = auth()->user();
             
-            $equipment = Equipment::where('office_id', $user->office_id)->find($id);
+            $equipment = Equipment::where('company_id', $user->company_id)->find($id);
 
             if (!$equipment) {
                 return response()->json([
@@ -409,12 +411,12 @@ readonly class EquipmentRecord
         public string $brand,
         public string $model,
         public ?string $serialNumber,
-        public int $clientId,
+        public ?int $clientId,
         public ?string $acquisitionDate,
         public ?string $warrantyExpiration,
         public ?string $location,
         public ?string $observations,
-        public int $officeId,
+        public int $companyId,
         public string $status = 'active'
     ) {}
 
@@ -431,7 +433,7 @@ readonly class EquipmentRecord
             'warranty_expiration' => $this->warrantyExpiration,
             'location' => $this->location,
             'observations' => $this->observations,
-            'office_id' => $this->officeId,
+            'company_id' => $this->companyId,
             'status' => $this->status,
         ];
     }

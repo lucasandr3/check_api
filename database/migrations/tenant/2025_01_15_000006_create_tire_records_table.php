@@ -18,13 +18,13 @@ return new class extends Migration
             $table->string('tire_model');
             $table->string('tire_size'); // ex: 195/65R15
             $table->date('installation_date');
-            $table->integer('installation_km');
+            $table->integer('installation_km')->nullable();
             $table->date('removal_date')->nullable();
             $table->integer('removal_km')->nullable();
             $table->enum('removal_reason', ['wear', 'damage', 'rotation', 'replacement'])->nullable();
-            $table->decimal('tread_depth_new', 4, 2); // in mm
+            $table->decimal('tread_depth_new', 4, 2)->nullable(); // in mm
             $table->decimal('tread_depth_removal', 4, 2)->nullable(); // in mm
-            $table->decimal('cost', 10, 2);
+            $table->decimal('cost', 10, 2)->nullable();
             $table->integer('warranty_km')->nullable();
             $table->enum('status', ['active', 'removed', 'rotated'])->default('active');
             $table->text('observations')->nullable();

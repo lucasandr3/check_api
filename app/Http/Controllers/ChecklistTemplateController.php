@@ -69,7 +69,7 @@ class ChecklistTemplateController extends Controller
             $query->where('is_active', true);
         }
 
-        $templates = $query->orderBy('name')->get();
+        $templates = $query->orderBy('id', 'desc')->get();
 
         return response()->json([
             'success' => true,

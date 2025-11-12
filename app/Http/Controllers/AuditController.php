@@ -80,7 +80,7 @@ class AuditController extends Controller
     public function index(Request $request): JsonResponse
     {
         $query = AuditLog::with('user')
-            ->orderBy('created_at', 'desc');
+            ->orderBy('id', 'desc');
 
         // Filtros
         if ($request->filled('event_type')) {

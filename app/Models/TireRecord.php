@@ -47,11 +47,11 @@ class TireRecord extends Model
     }
 
     /**
-     * Get the office that owns the tire record.
+     * Get the company that owns the tire record.
      */
-    public function office()
+    public function company()
     {
-        return $this->belongsTo(Company::class);
+        return $this->belongsTo(Company::class, 'company_id');
     }
 
     /**

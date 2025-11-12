@@ -10,7 +10,9 @@ use App\Models\User;
 use App\Services\UIPermissionService;
 use App\Http\Requests\LoginFormRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 /**
@@ -249,7 +251,10 @@ class AuthController extends Controller
      */
     public function logout(): JsonResponse
     {
-        Auth::guard('api')->logout();
+        $user = auth()->user();
+        
+        // Revogar o token atual do Sanctum
+        $user->currentAccessToken()->delete();
 
         return response()->json([
             'success' => true,
@@ -280,14 +285,20 @@ class AuthController extends Controller
      */
     public function refresh(): JsonResponse
     {
-        $token = Auth::guard('api')->refresh();
+        $user = auth()->user();
+        
+        // Revogar o token atual
+        $user->currentAccessToken()->delete();
+        
+        // Criar um novo token
+        $token = $user->createToken('auth-token')->plainTextToken;
 
         return response()->json([
             'success' => true,
             'data' => [
                 'access_token' => $token,
                 'token_type' => 'bearer',
-                'expires_in' => JWTAuth::factory()->getTTL() * 60
+                'expires_in' => null // Sanctum não tem expiração por padrão
             ]
         ]);
     }
@@ -351,7 +362,7 @@ class AuthController extends Controller
             ], 400);
         }
 
-        $user = Auth::guard('api')->user();
+        $user = auth()->user();
         $module = $request->input('module');
         $action = $request->input('action');
 

@@ -31,7 +31,7 @@ class UserController extends Controller
     {
         // A autorização é feita pelo middleware de permissões
 
-        $users = User::with(['roles', 'office'])->get();
+        $users = User::with(['roles', 'office'])->orderBy('id', 'desc')->get();
 
         return response()->json([
             'success' => true,

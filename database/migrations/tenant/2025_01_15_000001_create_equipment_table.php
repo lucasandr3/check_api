@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('tenant_id');
             $table->unsignedBigInteger('company_id');
-            $table->unsignedBigInteger('client_id');
+            $table->unsignedBigInteger('client_id')->nullable(); // Nullable - equipamento pode ser da empresa ou de um cliente
             $table->string('name');
             $table->string('type'); // 'generator', 'compressor', 'crane', etc.
             $table->string('brand');
@@ -27,7 +27,7 @@ return new class extends Migration
 
             $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
             $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
-            $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
+            $table->foreign('client_id')->references('id')->on('clients')->onDelete('set null');
             
             $table->index(['tenant_id', 'company_id']);
             $table->index(['client_id', 'status']);

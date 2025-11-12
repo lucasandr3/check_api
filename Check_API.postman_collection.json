@@ -1,0 +1,1900 @@
+{
+	"info": {
+		"_postman_id": "check-api-collection",
+		"name": "Check API - Fleet Manager",
+		"description": "Coleção completa da API Check API - Sistema de Gestão de Frotas e Equipamentos com Checklist",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Autenticação",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						},
+						"description": "Autentica o usuário e retorna um token JWT"
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/logout",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "logout"]
+						},
+						"description": "Faz logout do usuário"
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/refresh",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "refresh"]
+						},
+						"description": "Renova o token JWT"
+					},
+					"response": []
+				},
+				{
+					"name": "Me (Usuário Atual)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/me",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "me"]
+						},
+						"description": "Retorna informações do usuário autenticado"
+					},
+					"response": []
+				},
+				{
+					"name": "Verificar Permissões",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/permissions/check",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "permissions", "check"]
+						},
+						"description": "Verifica permissões específicas do usuário"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints de autenticação JWT"
+		},
+		{
+			"name": "ACL - Menus",
+			"item": [
+				{
+					"name": "Listar Menus",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/menus",
+							"host": ["{{base_url}}"],
+							"path": ["api", "menus"]
+						},
+						"description": "Lista todos os menus do usuário"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Todos os Menus (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/menus/all",
+							"host": ["{{base_url}}"],
+							"path": ["api", "menus", "all"]
+						},
+						"description": "Lista todos os menus (requer permissão admin.menus)"
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Menu",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Menu Exemplo\",\n    \"icon\": \"icon-name\",\n    \"route\": \"/route\",\n    \"parent_id\": null,\n    \"order\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/menus",
+							"host": ["{{base_url}}"],
+							"path": ["api", "menus"]
+						},
+						"description": "Cria um novo menu (requer permissão admin.menus)"
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar Menu",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Menu Atualizado\",\n    \"icon\": \"icon-updated\",\n    \"route\": \"/route-updated\",\n    \"order\": 2\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/menus/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "menus", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Atualiza um menu existente (requer permissão admin.menus)"
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar Menu",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/menus/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "menus", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Deleta um menu (requer permissão admin.menus)"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para gerenciamento de menus"
+		},
+		{
+			"name": "ACL - Roles",
+			"item": [
+				{
+					"name": "Listar Roles",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/roles",
+							"host": ["{{base_url}}"],
+							"path": ["api", "roles"]
+						},
+						"description": "Lista todas as roles"
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Role",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Role Exemplo\",\n    \"description\": \"Descrição da role\",\n    \"permissions\": [1, 2, 3]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/roles",
+							"host": ["{{base_url}}"],
+							"path": ["api", "roles"]
+						},
+						"description": "Cria uma nova role (requer permissão admin.roles)"
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar Role",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Role Atualizada\",\n    \"description\": \"Descrição atualizada\",\n    \"permissions\": [1, 2, 3, 4]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/roles/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "roles", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Atualiza uma role existente (requer permissão admin.roles)"
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar Role",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/roles/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "roles", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Deleta uma role (requer permissão admin.roles)"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para gerenciamento de roles"
+		},
+		{
+			"name": "ACL - Permissões",
+			"item": [
+				{
+					"name": "Listar Permissões",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/permissions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permissions"]
+						},
+						"description": "Lista todas as permissões"
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Permissão",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"permission.example\",\n    \"description\": \"Descrição da permissão\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/permissions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permissions"]
+						},
+						"description": "Cria uma nova permissão (requer permissão admin.permissions)"
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar Permissão",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"permission.updated\",\n    \"description\": \"Descrição atualizada\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/permissions/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permissions", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Atualiza uma permissão existente (requer permissão admin.permissions)"
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar Permissão",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/permissions/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permissions", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Deleta uma permissão (requer permissão admin.permissions)"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para gerenciamento de permissões"
+		},
+		{
+			"name": "ACL - Usuários",
+			"item": [
+				{
+					"name": "Listar Usuários",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users"]
+						},
+						"description": "Lista todos os usuários (requer permissão admin.users)"
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Usuário",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Usuário Exemplo\",\n    \"email\": \"usuario@example.com\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\",\n    \"roles\": [1, 2]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users"]
+						},
+						"description": "Cria um novo usuário (requer permissão admin.users)"
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar Usuário",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Usuário Atualizado\",\n    \"email\": \"usuario.updated@example.com\",\n    \"roles\": [1, 2, 3]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Atualiza um usuário existente (requer permissão admin.users)"
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar Usuário",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Deleta um usuário (requer permissão admin.users)"
+					},
+					"response": []
+				},
+				{
+					"name": "Permissões do Usuário",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/:id/permissions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", ":id", "permissions"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Retorna as permissões de um usuário específico"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para gerenciamento de usuários"
+		},
+		{
+			"name": "ACL - Auditoria",
+			"item": [
+				{
+					"name": "Listar Logs de Auditoria",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/audit/logs",
+							"host": ["{{base_url}}"],
+							"path": ["api", "audit", "logs"]
+						},
+						"description": "Lista todos os logs de auditoria (requer permissão admin.audit)"
+					},
+					"response": []
+				},
+				{
+					"name": "Detalhes do Log",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/audit/logs/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "audit", "logs", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Retorna detalhes de um log de auditoria específico (requer permissão admin.audit)"
+					},
+					"response": []
+				},
+				{
+					"name": "Estatísticas de Auditoria",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/audit/statistics",
+							"host": ["{{base_url}}"],
+							"path": ["api", "audit", "statistics"]
+						},
+						"description": "Retorna estatísticas de auditoria (requer permissão admin.audit)"
+					},
+					"response": []
+				},
+				{
+					"name": "Modelos Auditados",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/audit/models",
+							"host": ["{{base_url}}"],
+							"path": ["api", "audit", "models"]
+						},
+						"description": "Lista todos os modelos que possuem auditoria (requer permissão admin.audit)"
+					},
+					"response": []
+				},
+				{
+					"name": "Exportar Logs",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/audit/export",
+							"host": ["{{base_url}}"],
+							"path": ["api", "audit", "export"]
+						},
+						"description": "Exporta logs de auditoria (requer permissão admin.audit)"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para gerenciamento de auditoria"
+		},
+		{
+			"name": "Checklists",
+			"item": [
+				{
+					"name": "Listar Checklists",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/checklists",
+							"host": ["{{base_url}}"],
+							"path": ["api", "checklists"]
+						},
+						"description": "Lista todos os checklists (requer permissão checklists.manage)"
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Checklist",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"template_id\": 1,\n    \"equipment_id\": 1,\n    \"items\": [\n        {\n            \"name\": \"Verificação de óleo\",\n            \"status\": \"ok\",\n            \"observations\": \"Óleo em bom estado\"\n        }\n    ],\n    \"observations\": \"Checklist realizado com sucesso\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/checklists",
+							"host": ["{{base_url}}"],
+							"path": ["api", "checklists"]
+						},
+						"description": "Cria um novo checklist (requer permissão checklists.manage)"
+					},
+					"response": []
+				},
+				{
+					"name": "Visualizar Checklist",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/checklists/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "checklists", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Retorna detalhes de um checklist específico (requer permissão checklists.manage)"
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar Checklist",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"items\": [\n        {\n            \"name\": \"Verificação de óleo\",\n            \"status\": \"ok\",\n            \"observations\": \"Óleo atualizado\"\n        }\n    ],\n    \"observations\": \"Checklist atualizado\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/checklists/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "checklists", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Atualiza um checklist existente (requer permissão checklists.manage)"
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar Checklist",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/checklists/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "checklists", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Deleta um checklist (requer permissão checklists.manage)"
+					},
+					"response": []
+				},
+				{
+					"name": "Upload de Fotos",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "photos[]",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/checklists/:id/photos",
+							"host": ["{{base_url}}"],
+							"path": ["api", "checklists", ":id", "photos"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Faz upload de fotos para um checklist (requer permissão checklists.upload_photos)"
+					},
+					"response": []
+				},
+				{
+					"name": "Gerar PDF",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/pdf"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/checklists/:id/pdf",
+							"host": ["{{base_url}}"],
+							"path": ["api", "checklists", ":id", "pdf"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Gera PDF de um checklist (requer permissão checklists.generate_pdf)"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para gerenciamento de checklists"
+		},
+		{
+			"name": "Templates de Checklist",
+			"item": [
+				{
+					"name": "Listar Templates",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/checklist-templates",
+							"host": ["{{base_url}}"],
+							"path": ["api", "checklist-templates"]
+						},
+						"description": "Lista todos os templates de checklist (requer permissão checklist_templates.manage)"
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Template",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Template Exemplo\",\n    \"description\": \"Descrição do template\",\n    \"items\": [\n        {\n            \"name\": \"Verificação de óleo\",\n            \"type\": \"checkbox\",\n            \"required\": true\n        },\n        {\n            \"name\": \"Verificação de pneus\",\n            \"type\": \"checkbox\",\n            \"required\": true\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/checklist-templates",
+							"host": ["{{base_url}}"],
+							"path": ["api", "checklist-templates"]
+						},
+						"description": "Cria um novo template de checklist (requer permissão checklist_templates.manage)"
+					},
+					"response": []
+				},
+				{
+					"name": "Visualizar Template",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/checklist-templates/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "checklist-templates", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Retorna detalhes de um template específico (requer permissão checklist_templates.manage)"
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar Template",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Template Atualizado\",\n    \"description\": \"Descrição atualizada\",\n    \"items\": [\n        {\n            \"name\": \"Verificação de óleo\",\n            \"type\": \"checkbox\",\n            \"required\": true\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/checklist-templates/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "checklist-templates", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Atualiza um template existente (requer permissão checklist_templates.manage)"
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar Template",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/checklist-templates/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "checklist-templates", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Deleta um template (requer permissão checklist_templates.manage)"
+					},
+					"response": []
+				},
+				{
+					"name": "Duplicar Template",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Template Duplicado\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/checklist-templates/:id/duplicate",
+							"host": ["{{base_url}}"],
+							"path": ["api", "checklist-templates", ":id", "duplicate"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Duplica um template existente (requer permissão checklist_templates.create)"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para gerenciamento de templates de checklist"
+		},
+		{
+			"name": "Veículos",
+			"item": [
+				{
+					"name": "Listar Veículos",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/vehicles",
+							"host": ["{{base_url}}"],
+							"path": ["api", "vehicles"]
+						},
+						"description": "Lista todos os veículos (requer permissão vehicles.manage)"
+					},
+					"response": []
+				},
+				{
+					"name": "Cadastrar Veículo",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"brand\": \"Volkswagen\",\n    \"model\": \"Gol\",\n    \"year\": 2020,\n    \"color\": \"Branco\",\n    \"plate\": \"ABC-1234\",\n    \"chassis\": \"9BW12345678901234\",\n    \"fuel_type\": \"flex\",\n    \"engine\": \"1.0\",\n    \"transmission\": \"manual\",\n    \"category\": \"car\",\n    \"current_km\": 50000,\n    \"status\": \"active\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/vehicles",
+							"host": ["{{base_url}}"],
+							"path": ["api", "vehicles"]
+						},
+						"description": "Cadastra um novo veículo (requer permissão vehicles.manage)"
+					},
+					"response": []
+				},
+				{
+					"name": "Visualizar Veículo",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/vehicles/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "vehicles", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Retorna detalhes de um veículo específico (requer permissão vehicles.manage)"
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar Veículo",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"current_km\": 55000,\n    \"status\": \"active\",\n    \"observations\": \"Veículo em bom estado\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/vehicles/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "vehicles", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Atualiza um veículo existente (requer permissão vehicles.manage)"
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar Veículo",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/vehicles/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "vehicles", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Deleta um veículo (requer permissão vehicles.manage)"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para gerenciamento de veículos"
+		},
+		{
+			"name": "Equipamentos",
+			"item": [
+				{
+					"name": "Listar Equipamentos",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/equipment",
+							"host": ["{{base_url}}"],
+							"path": ["api", "equipment"]
+						},
+						"description": "Lista todos os equipamentos (requer permissão equipment.manage)"
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Equipamento",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Equipamento Exemplo\",\n    \"type\": \"vehicle\",\n    \"plate\": \"ABC-1234\",\n    \"brand\": \"Marca\",\n    \"model\": \"Modelo\",\n    \"year\": 2024\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/equipment",
+							"host": ["{{base_url}}"],
+							"path": ["api", "equipment"]
+						},
+						"description": "Cria um novo equipamento (requer permissão equipment.manage)"
+					},
+					"response": []
+				},
+				{
+					"name": "Visualizar Equipamento",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/equipment/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "equipment", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Retorna detalhes de um equipamento específico (requer permissão equipment.manage)"
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar Equipamento",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Equipamento Atualizado\",\n    \"plate\": \"XYZ-5678\",\n    \"year\": 2025\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/equipment/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "equipment", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Atualiza um equipamento existente (requer permissão equipment.manage)"
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar Equipamento",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/equipment/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "equipment", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Deleta um equipamento (requer permissão equipment.manage)"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para gerenciamento de equipamentos"
+		},
+		{
+			"name": "Pneus",
+			"item": [
+				{
+					"name": "Listar Pneus",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/tires",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tires"]
+						},
+						"description": "Lista todos os pneus (requer permissão tires.manage)"
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Pneu",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"serial_number\": \"SN123456\",\n    \"brand\": \"Marca\",\n    \"model\": \"Modelo\",\n    \"size\": \"205/55R16\",\n    \"vehicle_id\": 1,\n    \"position\": \"front_left\",\n    \"installation_date\": \"2024-01-15\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/tires",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tires"]
+						},
+						"description": "Cria um novo pneu (requer permissão tires.manage)"
+					},
+					"response": []
+				},
+				{
+					"name": "Visualizar Pneu",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/tires/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tires", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Retorna detalhes de um pneu específico (requer permissão tires.manage)"
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar Pneu",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"wear_level\": 50,\n    \"pressure\": 32,\n    \"observations\": \"Pneu em bom estado\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/tires/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tires", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Atualiza um pneu existente (requer permissão tires.manage)"
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar Pneu",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/tires/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tires", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Deleta um pneu (requer permissão tires.manage)"
+					},
+					"response": []
+				},
+				{
+					"name": "Remover Pneu",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"removal_date\": \"2024-01-20\",\n    \"reason\": \"Desgaste excessivo\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/tires/:id/remove",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tires", ":id", "remove"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Remove um pneu de um veículo (requer permissão tires.edit)"
+					},
+					"response": []
+				},
+				{
+					"name": "Pneus Atuais do Veículo",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/tires/vehicle/:vehicleId/current",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tires", "vehicle", ":vehicleId", "current"],
+							"variable": [
+								{
+									"key": "vehicleId",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Lista os pneus atualmente instalados em um veículo (requer permissão tires.view)"
+					},
+					"response": []
+				},
+				{
+					"name": "Relatório de Desgaste",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/tires/reports/wear",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tires", "reports", "wear"]
+						},
+						"description": "Retorna relatório de desgaste de pneus (requer permissão tires.reports)"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para gerenciamento de pneus"
+		},
+		{
+			"name": "Dashboard",
+			"item": [
+				{
+					"name": "Estatísticas",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/dashboard/stats",
+							"host": ["{{base_url}}"],
+							"path": ["api", "dashboard", "stats"]
+						},
+						"description": "Retorna estatísticas do dashboard (requer permissão dashboard.view)"
+					},
+					"response": []
+				},
+				{
+					"name": "Dados do Gráfico",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/dashboard/chart-data",
+							"host": ["{{base_url}}"],
+							"path": ["api", "dashboard", "chart-data"]
+						},
+						"description": "Retorna dados para gráficos do dashboard (requer permissão dashboard.view)"
+					},
+					"response": []
+				},
+				{
+					"name": "Ações Rápidas",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/dashboard/quick-actions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "dashboard", "quick-actions"]
+						},
+						"description": "Retorna ações rápidas disponíveis no dashboard (requer permissão dashboard.view)"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints do dashboard"
+		},
+		{
+			"name": "Teste",
+			"item": [
+				{
+					"name": "Teste API",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/test",
+							"host": ["{{base_url}}"],
+							"path": ["api", "test"]
+						},
+						"description": "Rota de teste para verificar se a API está funcionando"
+					},
+					"response": []
+				}
+			],
+			"description": "Rota de teste da API"
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://fixcar_api.test",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
+

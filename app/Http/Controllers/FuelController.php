@@ -73,7 +73,7 @@ class FuelController extends Controller
         }
 
         $perPage = min($request->get('per_page', 15), 100);
-        $fuelRecords = $query->orderBy('fuel_date', 'desc')->paginate($perPage);
+        $fuelRecords = $query->orderBy('id', 'desc')->paginate($perPage);
 
         // Calcular eficiência para cada registro
         $fuelRecords->getCollection()->transform(function ($record) {
